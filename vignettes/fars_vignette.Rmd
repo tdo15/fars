@@ -61,7 +61,7 @@ and the year for this data point.
 
 The `fars_summarize_years()` function is used to read in FARS data from a specified range of years
 and return the monthly number of accident registered in FARS
-as a `tbl_df` object with one column for every year analysed and
+as a `tbl_df` with one column for every year analysed and
 twelve rows, one for each month. The columns contain the sum of accidents reported to
 FARS in each month of the given year.
 The function internally uses the `fars_read_years()` function to read in and
