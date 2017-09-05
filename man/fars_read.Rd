@@ -22,6 +22,6 @@ that is accepted by \code{readr::read_csv()}. It gives a warning
 if the specified file name does not exist.
 }
 \examples{
-fars_read("accident_2013.csv.bz2")
+\dontrun{fars_read("accident_2013.csv.bz2")}
 
 }

@@ -13,7 +13,7 @@
 #'         (see R documentation for the \code{tibble} package).
 #'
 #' @examples
-#' fars_read("accident_2013.csv.bz2")
+#' \dontrun{fars_read("accident_2013.csv.bz2")}
 #'
 #' @importFrom readr read_csv
 #'
@@ -59,10 +59,10 @@ make_filename <- function(year) {
 #' @return This function returns a list of FARS data where every list entry contains the data
 #'         for one of the years specified in form of a \code{tbl_df}. The data frame has one
 #'         line for every data point in the respective FARS data set and indicates the month
-#'         and the year for this data point.\n
+#'         and the year for this data point.\cr
 #'         It produces an error warning if an invalid year is given as input.
 #'
-#'@details The function internally uses the \code{\link{make_filename()}} function to create standardised file
+#'@details The function internally uses the \code{\link{make_filename}} function to create standardised file
 #'         names from the \code{years} input. It then reads in CSV files from the working directory that
 #'         correspond to this standardised file name and uses \code{dplyr} functions to reorganise the
 #'         data.
@@ -102,7 +102,7 @@ fars_read_years <- function(years) {
 #'
 #'@details The function internally uses the \code{\link{fars_read_years}} function to read in and
 #'         extract the data and then uses \code{dplyr} and \code{tidyr} functions to summarise and
-#'         reformat the data.\n
+#'         reformat the data.\cr
 #'         Like \code{\link{fars_read_years}} it reads the data from your working directory
 #'         and it will produce a warning if an invalid year is given as input. Please be aware that
 #'         the standard naming convention for FARS data has to be used (cf. \code{\link{make_filename}}).

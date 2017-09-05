@@ -14,14 +14,14 @@ to specify which FARS reports are to be read in}
 This function returns a list of FARS data where every list entry contains the data
         for one of the years specified in form of a \code{tbl_df}. The data frame has one
         line for every data point in the respective FARS data set and indicates the month
-        and the year for this data point.\n
+        and the year for this data point.\cr
         It produces an error warning if an invalid year is given as input.
 }
 \description{
 The \code{fars_read_years()} function is used to read in FARS data for a specified range of years.
 }
 \details{
-The function internally uses the \code{\link{make_filename()}} function to create standardised file
+The function internally uses the \code{\link{make_filename}} function to create standardised file
         names from the \code{years} input. It then reads in CSV files from the working directory that
         correspond to this standardised file name and uses \code{dplyr} functions to reorganise the
         data.

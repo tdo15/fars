@@ -22,7 +22,7 @@ and return the monthly number of accident registered in FARS.
 \details{
 The function internally uses the \code{\link{fars_read_years}} function to read in and
         extract the data and then uses \code{dplyr} and \code{tidyr} functions to summarise and
-        reformat the data.\n
+        reformat the data.\cr
         Like \code{\link{fars_read_years}} it reads the data from your working directory
         and it will produce a warning if an invalid year is given as input. Please be aware that
         the standard naming convention for FARS data has to be used (cf. \code{\link{make_filename}}).
