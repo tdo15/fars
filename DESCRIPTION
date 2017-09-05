@@ -1,0 +1,19 @@
+Package: fars
+Type: Package
+Title: Importing and Analysing FARS Data
+Version: 0.1.0
+Author: Tobias Depke
+Maintainer: Tobias Depke <tdo15@helmholtz-hzi.de>
+Description: The 'fars' package serves to import and evaluate information 
+      from the US National Highway Traffic Safety Administration's
+      Fatality Analysis Reporting System. 
+License: GPL (>= 2)
+Encoding: UTF-8
+LazyData: true
+Suggests: knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
+RoxygenNote: 6.0.1
+Imports: tidyverse,
+    maps

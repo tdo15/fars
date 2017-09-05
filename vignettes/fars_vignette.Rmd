@@ -1,0 +1,170 @@
+---
+title: "Using the 'fars' package"
+author: "Tobias Depke"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo=FALSE, message=FALSE}
+setwd("../")
+source("R/fars_functions.R")
+library(tidyverse)
+```
+
+The `fars` package serves to import and evaluate information from the US National Highway Traffic Safety Administration's [Fatality Analysis Reporting System](https://www.nhtsa.gov/research-data/fatality-analysis-reporting-system-fars).  
+It allows the user to
+
+* read in FARS data in an uncomplicated manner,
+* create standardised file names for FARS data as used by the 
+US National Highway Traffic Safety Administration,
+* summarise FARS data for a specified range of years and
+* plot FARS accident data on maps of US states.  
+  
+The FARS data for the years 2013 through 2015 is included in the package and can be accessed
+directly via `system.file("extdata", "accident_2013.csv.bz2", package = "fars")`
+(change year in filename to access the other years or use `make_filename()` to generate
+the respective filename).
+
+## Functions
+
+### `fars_read()`
+
+The `fars_read()` function uses the `read_csv()` function from
+the `readr` package to read in a data set and converts it to the
+`tbl_df` format known from the `dplyr` and `tibble` packages.
+The function has been developed to read in FARS data but works with every data format
+that is accepted by `readr::read_csv()`. It gives a warning
+if the specified file name does not exist.
+The required input is a character string with the name of the file you want to read in.
+
+### `make_filename()`
+
+The `make_filename()` function generates standardised file names for FARS
+data sets based on the year you pass to it as argument.
+Its main *raison d'être* is its use inside the `fars_read_years()` function (see below)
+but it can also be used stand-alone.
+
+### `fars_read_years()`
+
+The `fars_read_years()` function is used to read in FARS data for a specified range of years. 
+It accepts a year or a vector of years as input and
+returns a list of FARS data where every list entry contains the data
+for one of the years specified in form of a `tbl_df`. The data frame has one
+line for every data point in the respective FARS data set and indicates the month
+and the year for this data point.
+
+### `fars_summarize_years()`
+
+The `fars_summarize_years()` function is used to read in FARS data from a specified range of years
+and return the monthly number of accident registered in FARS
+as a `tbl_df` object with one column for every year analysed and
+twelve rows, one for each month. The columns contain the sum of accidents reported to
+FARS in each month of the given year.
+The function internally uses the `fars_read_years()` function to read in and
+extract the data and then uses `dplyr` and `tidyr` functions to summarise and
+reformat the data.  
+Like `fars_read_years()` it reads the data from your working directory
+and it will produce a warning if an invalid year is given as input. Please be aware that
+the standard naming convention for FARS data has to be used (cf. `make_filename`).
+
+### `fars_map_state()`
+
+This function makes use of the geographic data contained in FARS accident data sets to plot
+accidents on maps of US states.
+Inputs are the year from which the data is to be plotted and the numeric code 
+of the US state to be analysed.
+The function returns a plot with a graphical representation of the selected US state with the
+accidents of the indicated year plotted as dots on the map according to their geographic
+location. If the data set contains no accidents for the indicated year and state,
+the message `"no accidents to plot"` is printed to the console and if an invalid
+state number is given as input, a warning will be displayed.
+`fars_map_state()` internally uses the `make_filename` and `fars_read`
+functions to read in the FARS data for the given year and than filters for the given state.
+The geographic data is extracted and plotted using the `maps` package.
+
+## Examples of usage
+
+```{r echo=FALSE, message=FALSE}
+library(knitr)
+opts_knit$set(root.dir = "../inst/extdata/")
+```
+
+Some examples of the functions in the package are given using the data for 2013, 2014 and 2015.  
+First, you need to install the package from GitHub and load it. 
+In the examples, we will also use additional functions from the `tidyverse` package,
+so we load this as well.
+
+```{r, eval=FALSE}
+devtools::install_github('tdo15/fars')
+
+library(fars)
+library(tidyverse)
+```
+
+If we want to look at the data for 2013, we can first use `make_filename()` function to
+get the respective filename.
+
+```{r}
+make_filename(2013)
+```
+
+We can read in the data using `fars_read_years()`:
+
+```{r message=FALSE}
+FARS_2013 <- fars_read_years(2013)
+```
+
+Now, we can do exploratory data analysis. For example, we can create a visualisation of
+the distribution of accidents per month:
+
+```{r fig.width=6, fig.height=2.5, message=FALSE}
+distr_2013 <- FARS_2013[1] %>%
+  as.data.frame %>%
+  group_by(MONTH) %>%
+  summarise(accidents = n())
+
+ggplot(distr_2013, aes(x = as.factor(MONTH), y = accidents)) +
+  geom_bar(stat = "identity") +
+  labs(x = "month", y = "number of accidents")
+```
+
+
+This analysis step is already implemented in the `fars_summarize_years()` function 
+(and gives the same result):
+
+```{r  fig.width=6, fig.height=2.5, message=FALSE}
+distr_2013_2 <- fars_summarize_years(2013)
+
+ggplot(distr_2013_2, aes(x = as.factor(MONTH), y = `2013`)) +
+  geom_bar(stat = "identity") +
+  labs(x = "month", y = "number of accidents")
+```
+
+
+We can also study several years in the same manner and e.g. have a look how accidents in december
+have changed over the years:
+
+```{r  fig.width=6, fig.height=4}
+accidents_dec <- fars_summarize_years(2013:2015) %>%
+  filter(MONTH == 12)
+
+plot(as.numeric(accidents_dec[-1]), type = "b", xlab = "Year", 
+     ylab = "no of accidents in December", xaxt = "n")
+axis(1, at=1:3, labels=2013:2015)
+```
+
+
+With the `fars_map_state()` function, finally, we can create geographical visualisation
+of accident data.
+If we for example want to plot all reported accidents that happened in Nebraska in 2015,
+we first need to find out the numeric state code of Nebraska,
+e.g. at https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_state_code.
+Then, we only need to give this code and the year to the function:
+
+```{r  fig.width=6, fig.height=4, message=FALSE}
+fars_map_state(31,2015)
+```
