@@ -9,7 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE, results='hide'}
 setwd("../")
 source("R/fars_functions.R")
 library(tidyverse)
@@ -88,7 +88,7 @@ The geographic data is extracted and plotted using the `maps` package.
 
 ## Examples of usage
 
-```{r echo=FALSE, message=FALSE}
+```{r echo=FALSE, message=FALSE, results='hide'}
 library(knitr)
 opts_knit$set(root.dir = "../inst/extdata/")
 ```
